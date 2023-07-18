@@ -31,7 +31,7 @@ Console.WriteLine(result);
 
 ```
 
-Predict text:
+Single text prediction:
 ```cs
 string text = "Socialites unite dolphin groups Dolphin groups, or \"pods\", rely on socialites to keep them from collapsing, scientists claim.";
 var prediction = gzipClassifier.Predict(text);
