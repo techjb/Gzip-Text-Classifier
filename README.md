@@ -5,7 +5,7 @@ classification algorithm with Gzip compression, which can be read about in [this
 
 The original repository written in Python, can be found at [this link](https://github.com/bazingagin/npc_gzip).
 
-Also available as a [Nuguet package](https://www.nuget.org/packages/Gzip.TextClassifier/).
+Also available as a [Nuget package](https://www.nuget.org/packages/Gzip.TextClassifier/).
 
 ## Usage
 
