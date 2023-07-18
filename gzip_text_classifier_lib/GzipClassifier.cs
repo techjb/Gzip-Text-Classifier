@@ -78,11 +78,11 @@ namespace gzip_text_classifier_lib
 
             if (GzipClassifierConfiguration.UseParallelism)
             {
-                PredictParallel(x1, Cx1);
+                PredictWithParallelism(x1, Cx1);
             }
             else
             {
-                PredictNoParallel(x1, Cx1);
+                PredictWithNoParallelism(x1, Cx1);
             }
 
             var sortedIdx = distanceFromX1
@@ -94,7 +94,7 @@ namespace gzip_text_classifier_lib
             return predictedClass.Trim();
         }
 
-        private void PredictParallel(string x1, long Cx1)
+        private void PredictWithParallelism(string x1, long Cx1)
         {
             var sync = new object();
             Parallel.ForEach(TrainingList,
@@ -109,7 +109,7 @@ namespace gzip_text_classifier_lib
                });
         }
 
-        private void PredictNoParallel(string x1, long Cx1)
+        private void PredictWithNoParallelism(string x1, long Cx1)
         {
             foreach (var item in TrainingList)
             {
