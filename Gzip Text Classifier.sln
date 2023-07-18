@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AE24C644-87DF-4EBC-B43E-579046C89331}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gzip_text_classifier_console", "gzip_text_classifier_console\gzip_text_classifier_console.csproj", "{832F8143-7B26-4158-A0E6-153F86A1111B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gzip_text_classifier_lib", "gzip_text_classifier_lib\gzip_text_classifier_lib.csproj", "{0BCAC3DD-B2ED-41C1-A57B-9DC86E1B01CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{832F8143-7B26-4158-A0E6-153F86A1111B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{832F8143-7B26-4158-A0E6-153F86A1111B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{832F8143-7B26-4158-A0E6-153F86A1111B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{832F8143-7B26-4158-A0E6-153F86A1111B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BCAC3DD-B2ED-41C1-A57B-9DC86E1B01CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCAC3DD-B2ED-41C1-A57B-9DC86E1B01CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCAC3DD-B2ED-41C1-A57B-9DC86E1B01CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCAC3DD-B2ED-41C1-A57B-9DC86E1B01CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DE47C6E-8406-461D-ADB6-C576E1BA4E54}
+	EndGlobalSection
+EndGlobal
