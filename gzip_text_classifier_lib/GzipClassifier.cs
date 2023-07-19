@@ -63,6 +63,8 @@ namespace gzip_text_classifier_lib
 
         private void InitializeTrainingList(List<Tuple<string, string>> list)
         {
+            TrainingList.Clear();
+
             for (var i = 0; i < list.Count; i++)
             {
                 var item = list[i];
@@ -91,8 +93,9 @@ namespace gzip_text_classifier_lib
                 .Take(GzipClassifierOptions.K)
                 .Select(item => item.Item2)
                 .ToList();
-            var predictedClass = sortedIdx.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
-            return predictedClass.Trim();
+            
+            var predicted = sortedIdx.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
+            return predicted;
         }
 
         private void PredictWithParallelism(string x1, long Cx1)
@@ -167,7 +170,7 @@ namespace gzip_text_classifier_lib
             {
                 gZipStream.Write(buffer, 0, buffer.Length);
             }
-            return memoryStream.ToArray().Length;
+            return memoryStream.Length;
         }
     }
 }
