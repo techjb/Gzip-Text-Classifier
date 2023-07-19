@@ -10,7 +10,7 @@ namespace gzip_text_classifier_lib
     {
         private readonly GzipClassifierOptions GzipClassifierOptions;
         private readonly List<Tuple<string, string, long>> TrainingList = new();
-        private List<Tuple<double, string>> distanceFromX1 = new();
+        //private List<Tuple<double, string>> distanceFromX1 = new();
         private int Total = 0;
         private int Processed = 0;
         private int Sucess = 0;
@@ -19,7 +19,7 @@ namespace gzip_text_classifier_lib
         {
             GzipClassifierOptions = classifierConfiguration;
             var trainList = CsvToList(GzipClassifierOptions.TrainFile);
-            InitializeTrainingList(trainList);
+            Initialize(trainList);
         }
 
         public double PredictFile(string testFile)
@@ -29,25 +29,65 @@ namespace gzip_text_classifier_lib
             Processed = 0;
             Sucess = 0;
 
-            foreach (var test in testList)
+            if (GzipClassifierOptions.ParallelismOnTestFile)
             {
-                string predictedClass = Predict(test.Item1);
-                Processed++;
-                if (predictedClass.Equals(test.Item2.Trim()))
-                {
-                    Sucess++;
-                }
-                if (GzipClassifierOptions.ConsoleOutput)
-                {
-                    OutputConsole();
-                }
+                PredictWithParalellism(testList);
+            }
+            else
+            {
+                PredictWithoutParalellism(testList);
             }
 
             return GetSucessRatio();
         }
 
+        private void PredictWithParalellism(List<Tuple<string, string>> testList)
+        {
+            Parallel.ForEach(testList, test =>
+            {
+                string predictedClass = Predict(test.Item1);
+                SetPrediction(test, predictedClass);                
+            });
+        }
+
+        private void PredictWithoutParalellism(List<Tuple<string, string>> testList)
+        {
+            foreach (var test in testList)
+            {
+                string predictedClass = Predict(test.Item1);
+                SetPrediction(test, predictedClass);
+            }
+        }
+
+        private void SetPrediction(Tuple<string, string> test, string predictedClass )
+        {
+            bool predicionSucess = predictedClass.Equals(test.Item2.Trim());
+            if (GzipClassifierOptions.ParallelismOnTestFile)
+            {
+                Interlocked.Increment(ref Processed);
+                if (predicionSucess)
+                {
+                    Interlocked.Increment(ref Sucess);
+                }
+            }
+            else
+            {
+                Processed++;
+                if (predicionSucess)
+                {
+                    Sucess++;
+                }
+            }
+            
+            OutputConsole();
+        }
+
         private void OutputConsole()
         {
+            if (!GzipClassifierOptions.ConsoleOutput)
+            {
+                return;
+            }
             var successRatio = GetSucessRatio();
             var processedPercentage = Math.Round((float)Processed * 100 / Total, 2);
 
@@ -61,13 +101,37 @@ namespace gzip_text_classifier_lib
             return Math.Round((float)Sucess / Processed, 3);
         }
 
-        private void InitializeTrainingList(List<Tuple<string, string>> list)
+        private void Initialize(List<Tuple<string, string>> list)
         {
             TrainingList.Clear();
-
-            for (var i = 0; i < list.Count; i++)
+            if (GzipClassifierOptions.ParallelismOnTestFile)
             {
-                var item = list[i];
+                InitializeWithParalellism(list);
+            }
+            else
+            {
+                InitializeWithoutParalellism(list);
+            }
+        }
+
+        private void InitializeWithParalellism(List<Tuple<string, string>> list)
+        {
+            var sync = new object();
+            Parallel.ForEach(list, item =>
+            {
+                long compressedLength = GZipLength(item.Item1);
+                var tuple = Tuple.Create(item.Item1, item.Item2, compressedLength);
+                lock(sync)
+                {
+                    TrainingList.Add(tuple);
+                }                
+            });
+        }
+
+        private void InitializeWithoutParalellism(List<Tuple<string, string>> list)
+        {
+            foreach(var item in list)
+            {
                 long compressedLength = GZipLength(item.Item1);
                 var tuple = Tuple.Create(item.Item1, item.Item2, compressedLength);
                 TrainingList.Add(tuple);
@@ -76,16 +140,16 @@ namespace gzip_text_classifier_lib
 
         public string Predict(string x1)
         {
-            distanceFromX1 = new();
+            List<Tuple<double, string>> distanceFromX1 = new();
             long Cx1 = GZipLength(x1);
 
-            if (GzipClassifierOptions.UseParallelism)
+            if (GzipClassifierOptions.ParallelismOnCalc)
             {
-                PredictWithParallelism(x1, Cx1);
+                PredictWithParallelism(x1, Cx1, distanceFromX1);
             }
             else
             {
-                PredictWithNoParallelism(x1, Cx1);
+                PredictWithNoParallelism(x1, Cx1, distanceFromX1);
             }
 
             var sortedIdx = distanceFromX1
@@ -93,12 +157,12 @@ namespace gzip_text_classifier_lib
                 .Take(GzipClassifierOptions.K)
                 .Select(item => item.Item2)
                 .ToList();
-            
+
             var predicted = sortedIdx.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
             return predicted;
         }
 
-        private void PredictWithParallelism(string x1, long Cx1)
+        private void PredictWithParallelism(string x1, long Cx1, List<Tuple<double, string>> distanceFromX1)
         {
             var sync = new object();
             Parallel.ForEach(TrainingList,
@@ -113,7 +177,7 @@ namespace gzip_text_classifier_lib
                });
         }
 
-        private void PredictWithNoParallelism(string x1, long Cx1)
+        private void PredictWithNoParallelism(string x1, long Cx1, List<Tuple<double, string>> distanceFromX1)
         {
             foreach (var item in TrainingList)
             {

@@ -4,7 +4,9 @@
     {
         public string TrainFile { get; set; } = string.Empty;
 
-        public bool UseParallelism { get; set; } = true;
+        public bool ParallelismOnCalc { get; set; } = true;
+
+        public bool ParallelismOnTestFile { get; set; } = false;
 
         public int K { get; set; } = 3;
 
