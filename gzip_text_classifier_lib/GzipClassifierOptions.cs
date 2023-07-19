@@ -6,13 +6,15 @@
 
         public bool UseParallelism { get; set; } = true;
 
-        public int K { get; set; } = 10;
+        public int K { get; set; } = 3;
 
         public int TextColumn { get; set; } = 0;
 
         public int LabelColumn { get; set; } = 1;
 
         public bool ConsoleOutput { get; set; } = true;
+
+        public bool HasHeaderRecord { get; set; } = true;
 
         public GzipClassifierOptions()
         {

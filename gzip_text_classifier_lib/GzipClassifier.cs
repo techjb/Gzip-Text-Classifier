@@ -8,7 +8,7 @@ namespace gzip_text_classifier_lib
 {
     public class GzipClassifier
     {
-        private readonly GzipClassifierOptions GzipClassifierConfiguration;
+        private readonly GzipClassifierOptions GzipClassifierOptions;
         private readonly List<Tuple<string, string, long>> TrainingList = new();
         private List<Tuple<double, string>> distanceFromX1 = new();
         private int Total = 0;
@@ -17,8 +17,8 @@ namespace gzip_text_classifier_lib
 
         public GzipClassifier(GzipClassifierOptions classifierConfiguration)
         {
-            GzipClassifierConfiguration = classifierConfiguration;
-            var trainList = CsvToList(GzipClassifierConfiguration.TrainFile);
+            GzipClassifierOptions = classifierConfiguration;
+            var trainList = CsvToList(GzipClassifierOptions.TrainFile);
             InitializeTrainingList(trainList);
         }
 
@@ -37,25 +37,26 @@ namespace gzip_text_classifier_lib
                 {
                     Sucess++;
                 }
-                if (GzipClassifierConfiguration.ConsoleOutput)
+                if (GzipClassifierOptions.ConsoleOutput)
                 {
                     OutputConsole();
                 }
             }
 
-            return GetPercentage();
+            return GetSucessRatio();
         }
 
         private void OutputConsole()
         {
-            var successPercentage = GetPercentage();
+            var successRatio = GetSucessRatio();
+            var processedPercentage = Math.Round((float)Processed * 100 / Total, 2);
+
             Console.WriteLine(
-                "Results: " +
-                "Processed: " + Processed + "/" + Total + " " +
-                "Sucess: " + Sucess + " (" + successPercentage + ")");
+                "Processed: " + Processed + "/" + Total + " (" + processedPercentage + "%) " +
+                "Sucess ratio: " + Sucess + " (" + successRatio + ")");
         }
 
-        private double GetPercentage()
+        private double GetSucessRatio()
         {
             return Math.Round((float)Sucess / Processed, 3);
         }
@@ -76,7 +77,7 @@ namespace gzip_text_classifier_lib
             distanceFromX1 = new();
             long Cx1 = GZipLength(x1);
 
-            if (GzipClassifierConfiguration.UseParallelism)
+            if (GzipClassifierOptions.UseParallelism)
             {
                 PredictWithParallelism(x1, Cx1);
             }
@@ -87,7 +88,7 @@ namespace gzip_text_classifier_lib
 
             var sortedIdx = distanceFromX1
                 .OrderBy(item => item.Item1)
-                .Take(GzipClassifierConfiguration.K)
+                .Take(GzipClassifierOptions.K)
                 .Select(item => item.Item2)
                 .ToList();
             var predictedClass = sortedIdx.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
@@ -129,24 +130,24 @@ namespace gzip_text_classifier_lib
             return Tuple.Create(ncd, item.Item2);
         }
 
-        private List<Tuple<string, string>> CsvToList(string file, bool hasHeader = true)
+        private List<Tuple<string, string>> CsvToList(string file)
         {
             using var streamReader = new StreamReader(file);
             var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 BadDataFound = null,
-                HasHeaderRecord = hasHeader,
+                HasHeaderRecord = GzipClassifierOptions.HasHeaderRecord,
             };
             using var csvReader = new CsvReader(streamReader, csvConfiguration);
-            if (hasHeader)
+            if (GzipClassifierOptions.HasHeaderRecord)
             {
                 csvReader.Read();
             }
             var records = new List<Tuple<string, string>>();
             while (csvReader.Read())
             {
-                var text = csvReader.GetField<string>(GzipClassifierConfiguration.TextColumn);
-                var label = csvReader.GetField<string>(GzipClassifierConfiguration.LabelColumn);
+                var text = csvReader.GetField<string>(GzipClassifierOptions.TextColumn);
+                var label = csvReader.GetField<string>(GzipClassifierOptions.LabelColumn);
 
                 if (text == null || label == null)
                 {
