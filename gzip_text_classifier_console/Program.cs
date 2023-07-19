@@ -33,7 +33,7 @@ namespace gzip_text_classifier_console
                 TrainFile = trainFile,          // File path for csv train file
                 ParallelismOnCalc = true,       // Use paralelism on distance calc. Default: true
                 ParallelismOnTestFile = false,  // Use paralelism for each test. Default: false
-                K = 2,                          // Value of K in k-nearest-neighbor. Default: 3
+                K = 3,                          // Value of K in k-nearest-neighbor. Default: 3
                 TextColumn = 0,                 // Text column number in csv file. Default: 0
                 LabelColumn = 1,                // Label column number in csv file. Default: 1
                 HasHeaderRecord = true,         // Csv has header record. Deault: true
