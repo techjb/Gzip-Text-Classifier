@@ -10,7 +10,6 @@ namespace gzip_text_classifier_lib
     {
         private readonly GzipClassifierOptions GzipClassifierOptions;
         private readonly List<Tuple<string, string, long>> TrainingList = new();
-        //private List<Tuple<double, string>> distanceFromX1 = new();
         private int Total = 0;
         private int Processed = 0;
         private int Sucess = 0;
@@ -46,7 +45,7 @@ namespace gzip_text_classifier_lib
             Parallel.ForEach(testList, test =>
             {
                 string predictedClass = Predict(test.Item1);
-                SetPrediction(test, predictedClass);                
+                SetPrediction(test, predictedClass);
             });
         }
 
@@ -59,7 +58,7 @@ namespace gzip_text_classifier_lib
             }
         }
 
-        private void SetPrediction(Tuple<string, string> test, string predictedClass )
+        private void SetPrediction(Tuple<string, string> test, string predictedClass)
         {
             bool predicionSucess = predictedClass.Equals(test.Item2.Trim());
             if (GzipClassifierOptions.ParallelismOnTestFile)
@@ -78,7 +77,7 @@ namespace gzip_text_classifier_lib
                     Sucess++;
                 }
             }
-            
+
             OutputConsole();
         }
 
@@ -121,16 +120,16 @@ namespace gzip_text_classifier_lib
             {
                 long compressedLength = GZipLength(item.Item1);
                 var tuple = Tuple.Create(item.Item1, item.Item2, compressedLength);
-                lock(sync)
+                lock (sync)
                 {
                     TrainingList.Add(tuple);
-                }                
+                }
             });
         }
 
         private void InitializeWithoutParalellism(List<Tuple<string, string>> list)
         {
-            foreach(var item in list)
+            foreach (var item in list)
             {
                 long compressedLength = GZipLength(item.Item1);
                 var tuple = Tuple.Create(item.Item1, item.Item2, compressedLength);

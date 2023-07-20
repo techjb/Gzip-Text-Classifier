@@ -22,7 +22,8 @@ namespace gzip_text_classifier_console
 
         private static void Run()
         {
-            /* K = 3 => 0.889
+            /* 
+             * K = 3 => 0.889
              * K = 2 => 0.875
              */
             string trainFile = @"C:\Users\Chus\Downloads\ag_news_train.csv";
