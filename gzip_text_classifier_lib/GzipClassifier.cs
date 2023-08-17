@@ -14,9 +14,9 @@ namespace gzip_text_classifier_lib
         private int Processed = 0;
         private int Sucess = 0;
 
-        public GzipClassifier(GzipClassifierOptions classifierConfiguration)
+        public GzipClassifier(GzipClassifierOptions gzipClassifierOptions)
         {
-            GzipClassifierOptions = classifierConfiguration;
+            GzipClassifierOptions = gzipClassifierOptions;
             var trainList = CsvToList(GzipClassifierOptions.TrainFile);
             Initialize(trainList);
         }
